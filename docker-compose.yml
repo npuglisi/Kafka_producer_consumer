@@ -1,0 +1,114 @@
+
+services:
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    environment:
+      CLUSTER_ID: 1WcytwdiTNi2QM7SHdsBhA
+      KAFKA_NODE_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+
+    ports:
+      - "9092:9092"
+    networks:
+      - kafka-net
+    healthcheck:
+      test:
+        - CMD
+        - kafka-topics
+        - --bootstrap-server
+        - localhost:9092
+        - --list
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  kafka-init:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - kafka-topics --bootstrap-server kafka:9092 --create --topic user_events --partitions 8 --replication-factor 1
+    networks:
+      - kafka-net
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - kafka-net
+
+  producer:
+    build:
+      context: ./producer
+      dockerfile: Dockerfile  
+    environment:
+      KAFKA_BROKER: kafka:9092
+      TOPIC_NAME: user_events
+      EVENTS_PER_SECOND: 100
+      N_USERS: 100
+      N_ITEMS: 10
+      BATCH_SIZE: 10
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+    networks:
+      - kafka-net
+
+  consumer:
+    build:
+      context: ./consumer  
+    environment:
+      KAFKA_BROKER: kafka:9092
+      TOPIC_NAME: user_events
+      GROUP_ID: realtime-consumer
+      MONGO_URI: mongodb://mongo:27017/
+      WINDOW_MINUTES: 1.0
+      MONGO_DATABASE: analytics
+      PARTITIONS: 8
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+      producer:
+        condition: service_started
+      mongo:
+        condition: service_started
+    networks:
+      - kafka-net
+
+  metabase:
+    image: metabase/metabase
+    ports:
+      - "3000:3000"
+    environment:
+      MB_ENABLE_MONGODB: "true"
+    volumes:
+      - ./metabase-data:/metabase.db
+    networks:
+      - kafka-net
+    depends_on:
+      mongo:
+        condition: service_started
+
+
+networks:
+  kafka-net:
+
+volumes:
+  metabase-data:
