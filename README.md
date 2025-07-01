@@ -13,6 +13,7 @@ This project is a solution to a data engineering case study. It simulates user i
   - `BATCH_SIZE`
   - `N_USERS`
   - `N_ITEMS`
+  - `PARTITIONS`
 
 ###  Problem 2: Kafka Consumer and Real-Time Aggregations
 
