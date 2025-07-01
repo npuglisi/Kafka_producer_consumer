@@ -17,10 +17,11 @@ This project is a solution to a data engineering case study. It simulates user i
 ###  Problem 2: Kafka Consumer and Real-Time Aggregations
 
 - Kafka consumer consumes `user_events`
-- Performs real-time aggregations per 1-minute windows:
+- Performs real-time aggregations per 1-minute windows using Faust:
   - Average amount
   - Minimum amount
   - Maximum amount
+  - Total amount
 - Stores results in MongoDB (`analytics` database)
 - MongoDB was chosen for:
   - High performance on inserts
@@ -84,7 +85,7 @@ Database: analytics
 
 - Kafka (Confluent Platform)
 - MongoDB
-- Python (asyncio, aiokafka, pymongo, etc.)
+- Python (asyncio, aiokafka, pymongo, faust)
 - Docker + Docker Compose
 - Metabase
 
