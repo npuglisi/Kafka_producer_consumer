@@ -35,6 +35,8 @@ This project is a solution to a data engineering case study. It simulates user i
 
 ![image](https://github.com/user-attachments/assets/c520c218-7d7c-4cb1-986b-ad4462a83e91)
 
+<img width="1673" alt="image" src="https://github.com/user-attachments/assets/beb80e65-0136-48cb-b528-deb00df3589b" />
+
 
 ---
 
