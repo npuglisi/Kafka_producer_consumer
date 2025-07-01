@@ -57,11 +57,9 @@ docker-compose up --build
 
 3. Access Metabase at: [http://localhost:3000](http://localhost:3000)
 
-4. Configure MongoDB as a data source in Metabase:
 ```
-Host: mongo
-Port: 27017
-Database: analytics
+login: email@email.com
+password: 123456!
 ```
 
 ---
