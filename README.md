@@ -52,7 +52,7 @@ cd <repo>
 
 2. Build and start the services:
 ```bash
-docker compose up --build
+docker compose up -d
 ```
 
 3. Access Metabase at: [http://localhost:3000](http://localhost:3000)
@@ -61,6 +61,7 @@ docker compose up --build
 login: email@email.com
 password: 123456!
 ```
+At home page click at Avrioc Dashboard
 
 ---
 
