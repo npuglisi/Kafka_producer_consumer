@@ -61,7 +61,7 @@ docker compose up -d
 login: email@email.com
 password: 123456!
 ```
-At home page click at Avrioc Dashboard
+At home page click at `Avrioc Dashboard`  
 
 ---
 
